@@ -60,7 +60,10 @@ header{display:flex; align-items:center; justify-content:space-between; margin-b
   margin:16px 0 0; font-size:27px; line-height:1.3; font-weight:600; letter-spacing:-.015em;
   word-break:keep-all;
 }
-.ko{margin:8px 0 0; font-size:17px; color:var(--dim); word-break:keep-all}
+/* 발음은 영어와 뜻 사이에, 둘보다 옅게 — 소리를 더듬는 보조바퀴지 외울 대상이 아니다 */
+.sound{margin:7px 0 0; font-size:14.5px; color:var(--dim); opacity:.75; letter-spacing:.01em; word-break:keep-all}
+.sound:empty{display:none}
+.ko{margin:7px 0 0; font-size:17px; color:var(--dim); word-break:keep-all}
 .meta{margin:16px 0 0; font-size:14px; color:var(--dim)}
 .meta b{color:var(--ink); font-weight:600}
 .bar{height:4px; border-radius:999px; background:var(--line); margin-top:13px; overflow:hidden}
@@ -249,6 +252,7 @@ function 그리기() {
     <div class="card">
       <span class="badge" style="background:${esc(s.색)}">${esc(s.이름)}</span>${고른상황 === 자동 ? '<span class="auto">순서상 다음</span>' : ''}
       <p class="en">${esc(n.en)}</p>
+      <p class="sound">${esc(n.발음 ?? '')}</p>
       <p class="ko">${esc(n.ko)}</p>
       <p class="meta">
         <b>${예고.sends + 1}번째 문장</b>${n.복습 ? ` · 복습 ${n.복습 + 1}번째` : ''}<br>
