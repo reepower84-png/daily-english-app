@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>데일리잉글리쉬</title>
+<meta name="description" content="생활영어 한 문장을 지금 더 받을지 결정하는 버튼">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f1f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141915" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="데일리잉글리쉬">
+<style>
+:root{
+  --bg:#f1f4ef; --card:#fffefb; --ink:#22271f; --dim:#78806f; --line:#dde3d8;
+  --accent:#275f47; --ok:#2f6b4f; --bad:#a4432f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141915; --card:#1e241f; --ink:#e6ebe2; --dim:#909a8a; --line:#333b33;
+    --accent:#7fbf9c; --ok:#7fbf9c; --bad:#e08a74;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  max-width:460px; margin:0 auto; padding:24px 20px;
+  padding-top:calc(24px + env(safe-area-inset-top));
+  padding-bottom:calc(32px + env(safe-area-inset-bottom));
+}
+header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px}
+.brand{font-size:15px; font-weight:700; letter-spacing:.1em; color:var(--dim)}
+.icon-btn{background:none; border:0; padding:6px; color:var(--dim); font-size:18px;
+  cursor:pointer; line-height:1; border-radius:8px}
+.icon-btn:hover{background:var(--line)}
+
+/* 상황 고르기 — 열여덟 가지라 한 줄에 안 들어간다. 접었다 펴게 둔다 */
+.picker{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+.chip{
+  padding:7px 11px; border:1px solid var(--line); border-radius:999px;
+  background:var(--card); color:var(--dim); font:inherit; font-size:13px; font-weight:600;
+  cursor:pointer; transition:background .12s, color .12s, border-color .12s;
+}
+.chip[aria-pressed="true"]{background:var(--sel,var(--accent)); border-color:var(--sel,var(--accent)); color:#fff}
+.more{border-style:dashed}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:16px}
+.badge{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.06em;
+  padding:4px 10px; border-radius:999px; color:#fff}
+.auto{margin-left:7px; font-size:11.5px; color:var(--dim); letter-spacing:.03em}
+.en{
+  margin:16px 0 0; font-size:27px; line-height:1.3; font-weight:600; letter-spacing:-.015em;
+  word-break:keep-all;
+}
+.ko{margin:8px 0 0; font-size:17px; color:var(--dim); word-break:keep-all}
+.meta{margin:16px 0 0; font-size:14px; color:var(--dim)}
+.meta b{color:var(--ink); font-weight:600}
+.bar{height:4px; border-radius:999px; background:var(--line); margin-top:13px; overflow:hidden}
+.bar>i{display:block; height:100%; border-radius:999px}
+
+button.go{
+  display:block; width:100%; padding:21px; border:0; border-radius:16px;
+  background:var(--accent); color:#fff;
+  font:inherit; font-size:18px; font-weight:700; letter-spacing:.01em;
+  cursor:pointer; transition:transform .08s, opacity .15s;
+}
+button.go:active{transform:scale(.985)}
+button.go:disabled{opacity:.5; cursor:default; transform:none}
+
+.status{margin:15px 2px 0; font-size:14.5px; min-height:22px; color:var(--dim); word-break:keep-all}
+.status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+.status a{color:inherit}
+.sub{margin:10px 2px 0; font-size:13px; color:var(--dim)}
+.study{margin:14px 2px 0; font-size:13px; color:var(--dim); line-height:1.7; word-break:keep-all}
+.study b{color:var(--ink); font-weight:600}
+footer{margin-top:20px; font-size:12.5px; color:var(--dim); line-height:1.8}
+
+.dots::after{content:"…"; animation:d 1.3s ease-in-out infinite}
+@keyframes d{0%,100%{opacity:.25}50%{opacity:1}}
+
+label{display:block; font-size:13px; color:var(--dim); margin:0 0 8px}
+input[type=password]{width:100%; padding:14px; font:15px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:12px}
+ol{margin:12px 0 0; padding-left:20px; font-size:14px; color:var(--dim)}
+ol li{margin:7px 0; word-break:keep-all}
+ol b{color:var(--ink)}
+code{font:13px ui-monospace,SFMono-Regular,Consolas,monospace; background:var(--bg);
+  padding:1px 5px; border-radius:5px; border:1px solid var(--line)}
+.skel{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="brand">📘 데일리잉글리쉬</span>
+    <button class="icon-btn" id="gear" title="토큰 설정" hidden>⚙</button>
+  </header>
+  <div id="view"><p class="skel">불러오는 중<span class="dots"></span></p></div>
+  <noscript><p>자바스크립트를 켜야 동작합니다.</p></noscript>
+</div>
+
+<script>
+const OWNER = 'reepower84-png', REPO = 'daily-english', WORKFLOW = 'send.yml', REF = 'main';
+const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const KEY = 'dailyenglish.token';
+const 자동 = '자동';
+
+const $ = s => document.querySelector(s);
+const view = $('#view'), gear = $('#gear');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// 날짜는 전부 한국 시간 기준 — 서버(progress.json)와 같은 잣대여야 '며칠 쉬었는지'가 맞는다
+const KST = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit'});
+const 오늘 = () => KST.format(new Date());
+const 요일 = ['일','월','화','수','목','금','토'];
+const 날짜 = ymd => {
+  const d = new Date(ymd + 'T12:00:00Z');
+  return `${d.getUTCMonth()+1}월 ${d.getUTCDate()}일 (${요일[d.getUTCDay()]})`;
+};
+const 며칠전 = ymd => Math.round((new Date(오늘()) - new Date(ymd)) / 86400000);
+
+// 설정 링크(#t=토큰)로 들어오면 그 자리에서 저장하고 주소를 지운다.
+// 폰에서 긴 토큰을 손으로 옮겨 적지 않게 하려는 장치다.
+// 해시는 서버로 전송되지 않으므로 Pages 로그에는 남지 않는다.
+(function 설정링크() {
+  const m = location.hash.match(/[#&]t=([^&]+)/);
+  if (!m) return;
+  try { localStorage.setItem(KEY, decodeURIComponent(m[1])); } catch {}
+  history.replaceState(null, '', location.pathname + location.search);
+})();
+
+let token = localStorage.getItem(KEY) || '';
+let 예고 = null;          // data/next.json — 앱이 읽는 유일한 파일
+let 고른상황 = 자동;       // 상황 code 또는 '자동'
+let 다펼침 = false;
+
+class GhError extends Error {
+  constructor(msg, 토큰문제 = false) { super(msg); this.토큰문제 = 토큰문제; }
+}
+
+async function gh(path, opts = {}) {
+  let res;
+  try {
+    res = await fetch(API + path, {
+      cache: 'no-store',
+      ...opts,
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + token,
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(opts.headers || {}),
+      },
+    });
+  } catch {
+    throw new GhError('GitHub에 연결하지 못했습니다. 네트워크를 확인해 주세요.');
+  }
+  if (res.status === 401) throw new GhError('토큰이 만료됐거나 잘못됐습니다. 새로 발급해 주세요.', true);
+  if (res.status === 403) throw new GhError('토큰 권한이 모자랍니다 — Actions를 “Read and write”로 주셔야 합니다.', true);
+  if (res.status === 404) throw new GhError('저장소를 찾지 못했습니다. 토큰이 daily-english 저장소를 포함하는지 확인해 주세요.', true);
+  if (!res.ok) throw new GhError(`GitHub 응답 ${res.status} ${res.statusText}`);
+  return res;
+}
+const 읽기 = async path =>
+  JSON.parse(await (await gh(`/contents/${path}?ref=${REF}`, {headers:{'Accept':'application/vnd.github.raw'}})).text());
+
+// ── 토큰 설정 화면 ──────────────────────────────────────
+function 토큰화면(안내 = '') {
+  gear.hidden = true;
+  view.innerHTML = `
+    <div class="card">
+      <h2 style="margin:0 0 6px; font-size:19px">처음 한 번만 설정</h2>
+      <p class="sub" style="margin:0 0 18px">${안내 || '이 버튼이 GitHub에 발송을 시킬 수 있도록, 권한 토큰을 한 번 넣어 주세요.<br>토큰은 이 기기 안에만 저장되고 어디에도 전송되지 않습니다.'}</p>
+      <label for="tk">GitHub 토큰</label>
+      <input id="tk" type="password" placeholder="github_pat_… 붙여넣기" autocomplete="off" spellcheck="false">
+      <p class="status" id="st"></p>
+      <button class="go" id="save" style="margin-top:12px">저장하고 시작</button>
+      <ol>
+        <li>Repository access → <b>Only select repositories</b> → <code>daily-english</code></li>
+        <li>Permissions → <b>Actions</b> = Read and write, <b>Contents</b> = Read-only</li>
+      </ol>
+      <p class="sub" style="margin-top:16px">
+        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">→ 토큰 발급하러 가기</a>
+      </p>
+    </div>`;
+  $('#tk').focus();
+  $('#save').onclick = async () => {
+    const v = $('#tk').value.trim();
+    if (!v) return;
+    const btn = $('#save'), st = $('#st');
+    btn.disabled = true; st.className = 'status'; st.innerHTML = '확인하는 중<span class="dots"></span>';
+    token = v;
+    try {
+      await 읽기('data/next.json');
+      localStorage.setItem(KEY, token);
+      본화면();
+    } catch (e) {
+      token = '';
+      st.className = 'status bad'; st.textContent = e.message;
+      btn.disabled = false;
+    }
+  };
+}
+
+// ── 본 화면 ────────────────────────────────────────────
+const 코드 = () => (고른상황 === 자동 ? 예고.auto : 고른상황);
+const 상황정보 = c => 예고.순서.find(s => s.code === c);
+
+function 그리기() {
+  const c = 코드(), n = 예고.상황[c], s = 상황정보(c);
+  const 마지막 = 예고.lastReadDate;
+  const 쉰날 = 마지막 ? 며칠전(마지막) : null;
+  const 쉼 = 마지막 === null ? '아직 시작 전'
+    // 음수는 폰 시계가 서버보다 뒤처진 경우다 (자정 직후 발송). 0과 같이 다룬다.
+    : 쉰날 <= 0 ? (예고.오늘보냄 > 0 ? `오늘 ${예고.오늘보냄}문장` : '방금 받음')
+    : 쉰날 === 1 ? '어제 받음'
+    : `${쉰날}일 쉬는 중`;
+
+  // 칩이 열여덟 개라 다 펴면 화면을 먹는다. 평소엔 자동 + 앞의 다섯만 보인다.
+  const 보일것 = 다펼침 ? 예고.순서 : 예고.순서.slice(0, 5);
+  const 칩 = [
+    `<button class="chip" data-k="${자동}" aria-pressed="${고른상황 === 자동}">자동</button>`,
+    ...보일것.map(x => `<button class="chip" data-k="${esc(x.code)}" aria-pressed="${x.code === 고른상황}"
+        style="--sel:${esc(x.색)}">${esc(x.이름)}</button>`),
+    `<button class="chip more" data-toggle="1">${다펼침 ? '접기' : `상황 ${예고.순서.length}가지 ▾`}</button>`,
+  ].join('');
+
+  view.innerHTML = `
+    <div class="picker">${칩}</div>
+    <div class="card">
+      <span class="badge" style="background:${esc(s.색)}">${esc(s.이름)}</span>${고른상황 === 자동 ? '<span class="auto">순서상 다음</span>' : ''}
+      <p class="en">${esc(n.en)}</p>
+      <p class="ko">${esc(n.ko)}</p>
+      <p class="meta">
+        <b>${예고.sends + 1}번째 문장</b>${n.복습 ? ` · 복습 ${n.복습 + 1}번째` : ''}<br>
+        ${esc(s.이름)} ${n.번째}/${n.전체}
+      </p>
+      <div class="bar"><i style="width:${Math.max(n.번째 / n.전체 * 100, 0.8)}%; background:${esc(s.색)}"></i></div>
+    </div>
+    <button class="go" id="go" style="background:${esc(s.색)}">한 문장 보내기</button>
+    <p class="status" id="st"></p>
+    <p class="study">보내면 <b>2. ${esc(예고.스터디.제목)}</b> 알림도 함께 갑니다.</p>
+    <footer>
+      ${esc(쉼)} · 누적 ${예고.sends}문장 · ${예고.일수}일 · 연속 ${예고.streak.current}일${예고.회차 > 1 ? ` · ${예고.회차}회차` : ''}<br>
+      ${마지막 ? `마지막으로 받은 날 ${날짜(마지막)}` : `시작 예정일 ${날짜(예고.startedAt)}`} · 서가 ${예고.총}문장
+    </footer>`;
+
+  view.querySelectorAll('.chip').forEach(b => {
+    b.onclick = () => {
+      if (b.dataset.toggle) 다펼침 = !다펼침; else 고른상황 = b.dataset.k;
+      그리기();
+    };
+  });
+  $('#go').onclick = 보내기;
+}
+
+async function 본화면() {
+  gear.hidden = false;
+  view.innerHTML = '<p class="skel">불러오는 중<span class="dots"></span></p>';
+  try {
+    예고 = await 읽기('data/next.json');
+    그리기();
+  } catch (e) {
+    if (e.토큰문제) return 토큰화면(esc(e.message));
+    view.innerHTML = `<div class="card"><p class="status bad">${esc(e.message)}</p></div>
+      <button class="go" onclick="location.reload()">다시 시도</button>`;
+  }
+}
+
+function 알리기(msg, kind = '') {
+  const st = $('#st'); if (!st) return;
+  st.className = 'status' + (kind ? ' ' + kind : '');
+  st.innerHTML = msg;
+}
+
+// ── 발송 ────────────────────────────────────────────────
+async function 보내기() {
+  const go = $('#go');
+  const 이전 = 예고.sends;
+  go.disabled = true;
+  go.textContent = '보내는 중…';
+  알리기(`${상황정보(코드()).이름} 한 문장을 요청했습니다<span class="dots"></span>`);
+
+  const 시각 = Date.now();
+  try {
+    await gh(`/actions/workflows/${WORKFLOW}/dispatches`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ ref: REF, inputs: { situation: 고른상황 } }),
+    });
+  } catch (e) {
+    go.disabled = false; go.textContent = '다시 보내기';
+    return 알리기(esc(e.message), 'bad');
+  }
+  await 지켜보기(시각, go, 이전);
+}
+
+/** 방금 띄운 실행을 찾아 끝날 때까지 지켜본다. 디스패치 직후엔 목록에 없을 수 있어 잠시 기다린다. */
+async function 지켜보기(시각, go, 이전) {
+  for (let i = 0; i < 60; i++) {                       // 4초 × 60 = 4분
+    await sleep(4000);
+    let runs;
+    try {
+      ({ workflow_runs: runs } = await (await gh(`/actions/workflows/${WORKFLOW}/runs?per_page=5`)).json());
+    } catch { continue; }                              // 일시적 실패는 그냥 다음 차례에
+    const run = runs.find(r => new Date(r.created_at).getTime() >= 시각 - 20000);
+    if (!run) { 알리기('실행을 기다리는 중<span class="dots"></span>'); continue; }
+    if (run.status !== 'completed') {
+      알리기(run.status === 'queued' ? '차례를 기다리는 중<span class="dots"></span>' : '보내는 중<span class="dots"></span>');
+      continue;
+    }
+    if (run.conclusion === 'success') return 성공(go, 이전);
+    go.textContent = '다시 보내기'; go.disabled = false;
+    return 알리기(`발송에 실패했습니다 — <a href="${esc(run.html_url)}" target="_blank" rel="noopener">기록 보기</a>`, 'bad');
+  }
+  go.textContent = '다시 보내기'; go.disabled = false;
+  알리기(`아직 끝나지 않았습니다. <a href="https://github.com/${OWNER}/${REPO}/actions" target="_blank" rel="noopener">GitHub에서 확인</a>`, 'bad');
+}
+
+async function 성공(go, 이전) {
+  go.textContent = '보냈습니다 ✓';
+  알리기('디스코드를 확인해 주세요.', 'ok');
+  // 진도 커밋이 반영될 때까지 기다렸다가, 다음 문장으로 화면을 갈아끼운다
+  for (let i = 0; i < 8; i++) {
+    await sleep(2500);
+    try {
+      const 새것 = await 읽기('data/next.json');
+      if (새것.sends > 이전) {
+        예고 = 새것;
+        고른상황 = 자동;                                 // 다음은 다시 차례대로
+        그리기();
+        알리기('보냈습니다. 더 배우려면 한 번 더 누르세요.', 'ok');
+        return;
+      }
+    } catch {}
+  }
+  알리기('문장은 나갔습니다. 새로고침하면 다음 것이 보입니다.', 'ok');
+}
+
+gear.onclick = () => {
+  if (!confirm('저장된 토큰을 지우고 다시 넣으시겠습니까?')) return;
+  localStorage.removeItem(KEY); token = '';
+  토큰화면();
+};
+
+token ? 본화면() : 토큰화면();
+</script>
+</body>
+</html>

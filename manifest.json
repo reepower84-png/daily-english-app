@@ -1,0 +1,14 @@
+{
+  "name": "데일리잉글리쉬",
+  "short_name": "데일리잉글리쉬",
+  "description": "생활영어 한 문장을 지금 더 받을지 결정하는 버튼",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f4ef",
+  "theme_color": "#275f47",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
