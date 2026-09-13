@@ -225,7 +225,11 @@ function 그리기() {
     : `${쉰날}일 쉬는 중`;
 
   // 칩이 열여덟 개라 다 펴면 화면을 먹는다. 평소엔 자동 + 앞의 다섯만 보인다.
-  const 보일것 = 다펼침 ? 예고.순서 : 예고.순서.slice(0, 5);
+  // 접은 상태에서도 '지금 고른 상황'은 늘 보여야 한다 — 안 그러면 카드에는 여행·숙소가
+  // 떠 있는데 눌린 칩은 하나도 없는 화면이 된다.
+  const 보일것 = 다펼침 ? 예고.순서
+    : 예고.순서.slice(0, 5).concat(
+        예고.순서.slice(5).filter(x => x.code === 고른상황));
   const 칩 = [
     `<button class="chip" data-k="${자동}" aria-pressed="${고른상황 === 자동}">자동</button>`,
     ...보일것.map(x => `<button class="chip" data-k="${esc(x.code)}" aria-pressed="${x.code === 고른상황}"
